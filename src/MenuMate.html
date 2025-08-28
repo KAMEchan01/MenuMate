@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenuMate - ランチメニュー提案アプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .question {
+            margin-bottom: 30px;
+        }
+
+        .question h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .required {
+            color: #ff6b6b;
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .choice-btn {
+            flex: 1;
+            padding: 15px 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .choice-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .optional-btn {
+            width: 100%;
+            padding: 15px;
+            border: 2px dashed #e0e0e0;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .optional-btn:hover {
+            background: #fff3cd;
+            border-color: #feca57;
+        }
+
+        .optional-btn.selected {
+            background: #feca57;
+            color: white;
+            border-color: #feca57;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            display: none;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-header h3 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 18px;
+            color: #667eea;
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 2px solid #667eea;
+        }
+
+        .menu-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .menu-price {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .comment {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #feca57;
+        }
+
+        .comment p {
+            color: #333;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .crowd-question {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .crowd-question h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .crowd-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .crowd-btn {
+            flex: 1;
+            padding: 15px 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .crowd-btn.empty {
+            border-color: #28a745;
+            color: #28a745;
+        }
+
+        .crowd-btn.crowded {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .crowd-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .final-btn {
+            width: 100%;
+            padding: 18px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .final-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 15px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .back-btn:hover {
+            background: #545b62;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .choice-btn {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍽️ MenuMate</h1>
+            <p>今日のランチ、一緒に決めましょう！</p>
+        </div>
+
+        <div id="selection-screen" class="content">
+            <div class="question">
+                <h3>💰 今日のお財布事情は？ <span class="required">※必須</span></h3>
+                <div class="button-group">
+                    <button class="choice-btn" data-budget="rich">富裕<br><small>450円〜</small></button>
+                    <button class="choice-btn" data-budget="normal">普通<br><small>400円程度</small></button>
+                    <button class="choice-btn" data-budget="poor">金欠<br><small>300円以下</small></button>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>🍽️ お腹の調子は？ <span class="required">※必須</span></h3>
+                <div class="button-group">
+                    <button class="choice-btn" data-hunger="hungry">はらぺこ<br><small>がっつり系</small></button>
+                    <button class="choice-btn" data-hunger="light">少食<br><small>軽め系</small></button>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>✨ 今日の気分は？</h3>
+                <button class="optional-btn" data-mood="special">アゲアゲ<br><small>特別感を求める</small></button>
+            </div>
+
+            <button id="submit-btn" class="submit-btn" disabled>🎯 提案して！</button>
+        </div>
+
+        <div id="result-screen" class="content result">
+            <div class="result-card">
+                <div class="result-header">
+                    <h3>💡 MenuMateからの提案</h3>
+                </div>
+                <div id="menu-items"></div>
+            </div>
+
+            <div class="comment">
+                <p id="comment-text"></p>
+            </div>
+
+            <div class="crowd-question">
+                <h4>【混雑状況はどうですか？】</h4>
+                <div class="crowd-buttons">
+                    <button class="crowd-btn empty" onclick="handleCrowdStatus('empty')">
+                        🟢 空いてる<br><small>麺🍜</small>
+                    </button>
+                    <button class="crowd-btn crowded" onclick="handleCrowdStatus('crowded')">
+                        🔴 混んでる<br><small>再提案</small>
+                    </button>
+                </div>
+            </div>
+
+            <button class="final-btn" onclick="finalDecision()">✅ これに決めた！</button>
+            <button class="back-btn" onclick="goBack()">← 最初から選び直す</button>
+        </div>
+
+        <div id="final-screen" class="content result">
+            <div class="result-header" style="text-align: center; margin-bottom: 30px;">
+                <h3>🎉 決定しました！</h3>
+                <p style="margin-top: 10px; color: #666;">美味しいランチをお楽しみください</p>
+            </div>
+            <button class="back-btn" onclick="restart()">← 新しく選ぶ</button>
+        </div>
+    </div>
+
+    <script src="menuDatabase.js"></script>
+    <script>
+
+        // 選択状態
+        let selections = {
+            budget: null,
+            hunger: null,
+            mood: null
+        };
+
+        let currentSuggestion = null;
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // 選択ボタンのイベント
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.dataset.budget || this.dataset.hunger;
+                    const category = this.dataset.budget ? 'budget' : 'hunger';
+                    
+                    // 同じカテゴリの他のボタンの選択を解除
+                    document.querySelectorAll(`[data-${category}]`).forEach(b => b.classList.remove('selected'));
+                    
+                    this.classList.add('selected');
+                    selections[category] = type;
+                    
+                    checkSubmitButton();
+                });
+            });
+
+            // 気分ボタン（任意）
+            document.querySelector('.optional-btn').addEventListener('click', function() {
+                this.classList.toggle('selected');
+                selections.mood = this.classList.contains('selected') ? this.dataset.mood : null;
+            });
+
+            // 提案ボタン
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                generateSuggestion();
+            });
+        }
+
+        function checkSubmitButton() {
+            const submitBtn = document.getElementById('submit-btn');
+            if (selections.budget && selections.hunger) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        function generateSuggestion(avoidCrowded = false, prioritizeRamen = false) {
+            const suggestion = createSuggestion(selections, avoidCrowded, prioritizeRamen);
+            currentSuggestion = suggestion;
+            displaySuggestion(suggestion);
+            showResultScreen();
+        }
+
+        function createSuggestion(selections, avoidCrowded = false, prioritizeRamen = false) {
+            const budget = getBudgetRange(selections.budget);
+            const isHungry = selections.hunger === 'hungry';
+            const isSpecial = selections.mood === 'special';
+            
+            let availableItems = [...menuDatabase.main];
+            
+            // 混雑回避
+            if (avoidCrowded) {
+                availableItems = availableItems.filter(item => !item.crowded);
+            }
+            
+            // 空いている場合はラーメンを優先
+            if (prioritizeRamen) {
+                const ramenItems = availableItems.filter(item => item.category === 'noodle');
+                const otherItems = availableItems.filter(item => item.category !== 'noodle');
+                availableItems = [...ramenItems, ...otherItems];
+            }
+            
+            let suggestions = [];
+            
+            // 予算に応じた提案生成
+            for (let attempt = 0; attempt < 50; attempt++) {
+                const suggestion = generateRandomCombination(availableItems, budget, isHungry, isSpecial, prioritizeRamen);
+                if (suggestion && suggestion.total <= budget.max) {
+                    suggestions.push(suggestion);
+                    if (suggestions.length >= 2) break;
+                }
+            }
+            
+            // 最適な提案を選択
+            if (suggestions.length > 0) {
+                return suggestions[Math.floor(Math.random() * Math.min(suggestions.length, 2))];
+            }
+            
+            // フォールバック
+            return createFallbackSuggestion(budget);
+        }
+
+        function generateRandomCombination(availableItems, budget, isHungry, isSpecial, prioritizeRamen = false) {
+            let items = [];
+            let total = 0;
+            
+            // 特別感を求める場合はスペシャルメニュー優先
+            if (isSpecial) {
+                availableItems = [...availableItems.filter(item => item.name.includes('スペシャル')), ...availableItems];
+            }
+            
+            // ラーメン優先の場合は麺類を最優先
+            if (prioritizeRamen) {
+                availableItems = [...availableItems.filter(item => item.category === 'noodle'), ...availableItems];
+            }
+            
+            // メインアイテムを選択
+            const mainItem = availableItems[Math.floor(Math.random() * Math.min(3, availableItems.length))];
+            items.push(mainItem);
+            total += mainItem.price;
+            
+            // 組み合わせ制限チェック
+            const canAddRice = !['curry', 'bowl', 'bento'].includes(mainItem.category);
+            const canAddSide = total < budget.max - 60;
+            
+            // ご飯を追加（条件に応じて）
+            if (canAddRice && Math.random() > 0.3) {
+                const riceOptions = isHungry ? 
+                    menuDatabase.rice.filter(r => r.name.includes('大') || r.name.includes('中')) :
+                    menuDatabase.rice.filter(r => !r.name.includes('大'));
+                
+                if (riceOptions.length > 0 && total + riceOptions[0].price <= budget.max) {
+                    const rice = riceOptions[Math.floor(Math.random() * riceOptions.length)];
+                    items.push(rice);
+                    total += rice.price;
+                }
+            }
+            
+            // サイドメニューを追加
+            if (canAddSide && Math.random() > 0.4) {
+                const affordableSides = menuDatabase.side.filter(side => total + side.price <= budget.max);
+                if (affordableSides.length > 0) {
+                    const side = affordableSides[Math.floor(Math.random() * affordableSides.length)];
+                    items.push(side);
+                    total += side.price;
+                }
+            }
+            
+            return {
+                items: items,
+                total: total,
+                comment: generateComment(items, selections, total, prioritizeRamen)
+            };
+        }
+
+        function getBudgetRange(budget) {
+            switch(budget) {
+                case 'rich': return {max: 500, min: 450};
+                case 'normal': return {max: 450, min: 300};
+                case 'poor': return {max: 300, min: 150};
+                default: return {max: 400, min: 200};
+            }
+        }
+
+        function generateComment(items, selections, total, prioritizeRamen = false) {
+            const comments = [];
+            
+            // ラーメン優先時の特別コメント
+            if (prioritizeRamen) {
+                const hasRamen = items.some(item => item.category === 'noodle');
+                if (hasRamen) {
+                    comments.push('今がチャンス！熱々麺類を楽しめます', 'ラッキー！待ち時間なしで麺類が食べられそう', '空いてる今なら麺類がおすすめ');
+                }
+            }
+            
+            if (selections.budget === 'poor') {
+                comments.push('節約ランチでも美味しく！', '金欠の味方メニューです', 'コスパ最高の組み合わせ');
+            } else if (selections.budget === 'rich') {
+                comments.push('今日はちょっと贅沢しましょう！', '充実ランチで午後も頑張って', 'リッチなランチタイム');
+            } else {
+                comments.push('バランスの良い組み合わせです', '定番で間違いなし', '普通予算でしっかりと');
+            }
+            
+            if (selections.hunger === 'hungry') {
+                comments.push('がっつり食べて元気チャージ！', 'ボリューム満点で満足度◎');
+            } else {
+                comments.push('軽やかランチで午後もすっきり', 'ヘルシーで体に優しい');
+            }
+            
+            if (selections.mood === 'special') {
+                comments.push('今日は特別な日ですね！', 'スペシャル気分にぴったり');
+            }
+            
+            return comments[Math.floor(Math.random() * comments.length)];
+        }
+
+        function createFallbackSuggestion(budget) {
+            if (budget.max <= 300) {
+                return {
+                    items: [{name: 'カレーライス', price: 200, icon: '🍛'}],
+                    total: 200,
+                    comment: '定番カレーで間違いなし！'
+                };
+            } else {
+                return {
+                    items: [
+                        {name: 'お魚プレート', price: 200, icon: '🐟'},
+                        {name: 'ご飯（中）', price: 90, icon: '🍚'},
+                        {name: '味噌汁', price: 60, icon: '🍲'}
+                    ],
+                    total: 350,
+                    comment: 'バランス良い定食スタイル！'
+                };
+            }
+        }
+
+        function displaySuggestion(suggestion) {
+            const menuItems = document.getElementById('menu-items');
+            const commentText = document.getElementById('comment-text');
+            
+            menuItems.innerHTML = '';
+            
+            suggestion.items.forEach(item => {
+                const menuItem = document.createElement('div');
+                menuItem.className = 'menu-item';
+                menuItem.innerHTML = `
+                    <div class="menu-name">${item.icon} ${item.name}</div>
+                    <div class="menu-price">${item.price}円</div>
+                `;
+                menuItems.appendChild(menuItem);
+            });
+            
+            // 合計を追加
+            const totalItem = document.createElement('div');
+            totalItem.className = 'menu-item';
+            totalItem.innerHTML = `
+                <div class="menu-name">💰 合計金額</div>
+                <div class="menu-price">${suggestion.total}円</div>
+            `;
+            menuItems.appendChild(totalItem);
+            
+            commentText.textContent = `💬 ${suggestion.comment}`;
+        }
+
+        function handleCrowdStatus(status) {
+            if (status === 'crowded') {
+                generateSuggestion(true); // 混雑メニューを避けて再提案
+            } else {
+                generateSuggestion(false, true); // 空いている場合はラーメンを優先して再提案
+            }
+        }
+
+        function finalDecision() {
+            showFinalScreen();
+        }
+
+        function showResultScreen() {
+            document.getElementById('selection-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            document.getElementById('final-screen').style.display = 'none';
+        }
+
+        function showFinalScreen() {
+            document.getElementById('selection-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('final-screen').style.display = 'block';
+        }
+
+        function goBack() {
+            document.getElementById('selection-screen').style.display = 'block';
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('final-screen').style.display = 'none';
+        }
+
+        function restart() {
+            // 選択状態をリセット
+            selections = {budget: null, hunger: null, mood: null};
+            
+            // ボタンの選択状態をリセット
+            document.querySelectorAll('.choice-btn, .optional-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // 提案ボタンを無効化
+            document.getElementById('submit-btn').disabled = true;
+            
+            // 最初の画面を表示
+            goBack();
+        }
+    </script>
+</body>
+</html>
