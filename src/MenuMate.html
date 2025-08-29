@@ -496,6 +496,32 @@
                 availableItems = [...availableItems.filter(item => item.category === 'noodle'), ...availableItems];
             }
             
+            // 予算と食欲に基づく品数決定
+            const budgetType = selections.budget;
+            const hungerType = selections.hunger;
+            let targetItemCount = 2; // デフォルト
+            
+            if (budgetType === 'poor' && hungerType === 'light') {
+                // 金欠＋少食：290円以内で2品目
+                targetItemCount = 2;
+                budget.max = Math.min(budget.max, 290);
+            } else if (budgetType === 'normal' && hungerType === 'light') {
+                // 普通＋少食：380円程度で味噌汁を含む3品目
+                targetItemCount = 3;
+                budget.max = Math.min(budget.max, 380);
+            } else if (budgetType === 'normal' && hungerType === 'hungry') {
+                // 普通＋はらぺこ：4品目
+                targetItemCount = 4;
+            } else if (budgetType === 'rich' && hungerType === 'hungry') {
+                // 富裕＋はらぺこ：5品目
+                targetItemCount = 5;
+            }
+            
+            // アゲアゲの場合はデザートをプラス
+            if (isSpecial) {
+                targetItemCount += 1;
+            }
+            
             // メインアイテムを選択
             const mainItem = availableItems[Math.floor(Math.random() * Math.min(3, availableItems.length))];
             items.push(mainItem);
@@ -503,28 +529,61 @@
             
             // 組み合わせ制限チェック
             const canAddRice = !['curry', 'bowl', 'bento'].includes(mainItem.category);
-            const canAddSide = total < budget.max - 60;
             
-            // ご飯を追加（条件に応じて）
-            if (canAddRice && Math.random() > 0.3) {
-                const riceOptions = isHungry ? 
-                    menuDatabase.rice.filter(r => r.name.includes('大') || r.name.includes('中')) :
-                    menuDatabase.rice.filter(r => !r.name.includes('大'));
+            // 品数に応じてアイテムを追加
+            let attempts = 0;
+            while (items.length < targetItemCount && attempts < 20) {
+                attempts++;
                 
-                if (riceOptions.length > 0 && total + riceOptions[0].price <= budget.max) {
-                    const rice = riceOptions[Math.floor(Math.random() * riceOptions.length)];
-                    items.push(rice);
-                    total += rice.price;
+                // 品数に応じた優先順位
+                if (items.length === 1 && canAddRice) {
+                    // 2品目：ご飯を優先
+                    const riceOptions = isHungry ? 
+                        menuDatabase.rice.filter(r => r.name.includes('大') || r.name.includes('中')) :
+                        menuDatabase.rice.filter(r => !r.name.includes('大'));
+                    
+                    if (riceOptions.length > 0) {
+                        const rice = riceOptions[Math.floor(Math.random() * riceOptions.length)];
+                        if (total + rice.price <= budget.max) {
+                            items.push(rice);
+                            total += rice.price;
+                            continue;
+                        }
+                    }
                 }
-            }
-            
-            // サイドメニューを追加
-            if (canAddSide && Math.random() > 0.4) {
-                const affordableSides = menuDatabase.side.filter(side => total + side.price <= budget.max);
+                
+                if (items.length === 2 && (budgetType === 'normal' && hungerType === 'light')) {
+                    // 普通＋少食の3品目：味噌汁を必須で追加
+                    const misoSoup = menuDatabase.side.find(side => side.name === '味噌汁');
+                    if (misoSoup && total + misoSoup.price <= budget.max) {
+                        items.push(misoSoup);
+                        total += misoSoup.price;
+                        continue;
+                    }
+                }
+                
+                // アゲアゲの場合、最後にデザートを追加
+                if (isSpecial && items.length === targetItemCount - 1) {
+                    const dessert = menuDatabase.side.find(side => side.category === 'dessert');
+                    if (dessert && total + dessert.price <= budget.max) {
+                        items.push(dessert);
+                        total += dessert.price;
+                        continue;
+                    }
+                }
+                
+                // その他のサイドメニューを追加
+                const affordableSides = menuDatabase.side.filter(side => 
+                    total + side.price <= budget.max && 
+                    !items.some(item => item.name === side.name)
+                );
+                
                 if (affordableSides.length > 0) {
                     const side = affordableSides[Math.floor(Math.random() * affordableSides.length)];
                     items.push(side);
                     total += side.price;
+                } else {
+                    break; // 予算内で追加できるアイテムがない
                 }
             }
             
