@@ -10,7 +10,7 @@ const menuDatabase = {
         {name: 'お肉プレート', price: 250, icon: '🍖', category: 'plate'},
         {name: 'お魚プレート', price: 200, icon: '🐟', category: 'plate'},
         {name: 'お楽しみプレート', price: 230, icon: '🍽️', category: 'plate'},
-        {name: '丼ぶり', price: 320, icon: '🍛', category: 'bowl'},
+        {name: '丼ぶり', price: 330, icon: '🍛', category: 'bowl'},
         {name: 'ミニ丼', price: 200, icon: '🥣', category: 'bowl'},
         {name: 'スペシャルカレー', price: 300, icon: '🍛', category: 'curry'},
         {name: 'カレーライス', price: 200, icon: '🍛', category: 'curry'},
