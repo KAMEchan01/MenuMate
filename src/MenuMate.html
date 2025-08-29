@@ -322,7 +322,7 @@
             <div class="question">
                 <h3>💰 今日のお財布事情は？ <span class="required">※必須</span></h3>
                 <div class="button-group">
-                    <button class="choice-btn" data-budget="rich">富裕<br><small>450円〜</small></button>
+                    <button class="choice-btn" data-budget="rich">富裕<br><small>450円以上</small></button>
                     <button class="choice-btn" data-budget="normal">普通<br><small>400円程度</small></button>
                     <button class="choice-btn" data-budget="poor">金欠<br><small>300円以下</small></button>
                 </div>
@@ -375,8 +375,20 @@
         <div id="final-screen" class="content result">
             <div class="result-header" style="text-align: center; margin-bottom: 30px;">
                 <h3>🎉 決定しました！</h3>
-                <p style="margin-top: 10px; color: #666;">美味しいランチをお楽しみください</p>
+                <p style="margin-top: 10px; color: #666;">最高のランチタイムをお過ごしください</p>
             </div>
+            
+            <div class="result-card">
+                <div class="result-header">
+                    <h3>📋 選択されたメニュー</h3>
+                </div>
+                <div id="final-menu-items"></div>
+            </div>
+
+            <div class="comment">
+                <p id="final-comment-text"></p>
+            </div>
+            
             <button class="back-btn" onclick="restart()">← 新しく選ぶ</button>
         </div>
     </div>
@@ -683,6 +695,36 @@
             commentText.textContent = `💬 ${suggestion.comment}`;
         }
 
+        function displayFinalDecision() {
+            if (!currentSuggestion) return;
+            
+            const finalMenuItems = document.getElementById('final-menu-items');
+            const finalCommentText = document.getElementById('final-comment-text');
+            
+            finalMenuItems.innerHTML = '';
+            
+            currentSuggestion.items.forEach(item => {
+                const menuItem = document.createElement('div');
+                menuItem.className = 'menu-item';
+                menuItem.innerHTML = `
+                    <div class="menu-name">${item.icon} ${item.name}</div>
+                    <div class="menu-price">${item.price}円</div>
+                `;
+                finalMenuItems.appendChild(menuItem);
+            });
+            
+            // 合計を追加
+            const totalItem = document.createElement('div');
+            totalItem.className = 'menu-item';
+            totalItem.innerHTML = `
+                <div class="menu-name">💰 合計金額</div>
+                <div class="menu-price">${currentSuggestion.total}円</div>
+            `;
+            finalMenuItems.appendChild(totalItem);
+            
+            finalCommentText.textContent = `💬 ${currentSuggestion.comment}`;
+        }
+
         function handleCrowdStatus(status) {
             if (status === 'crowded') {
                 generateSuggestion(true); // 混雑メニューを避けて再提案
@@ -692,6 +734,7 @@
         }
 
         function finalDecision() {
+            displayFinalDecision();
             showFinalScreen();
         }
 
