@@ -309,6 +309,183 @@
                 min-width: 100%;
             }
         }
+
+        /* Gacha Event Styles */
+        .gacha-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .gacha-container {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .gacha-title {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .gacha-machine {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            background: linear-gradient(145deg, #ff4757, #ff3838);
+            border-radius: 20px;
+            border: 8px solid #ffffff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gacha-ball {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(145deg, #feca57, #ff9ff3);
+            border-radius: 50%;
+            border: 4px solid #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            animation: gachaSpin 2s linear infinite;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .gacha-ball.stopped {
+            animation: gachaBounce 0.5s ease-out;
+        }
+
+        @keyframes gachaSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        @keyframes gachaBounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            40% {
+                transform: translateY(-10px) scale(1.1);
+            }
+            60% {
+                transform: translateY(-5px) scale(1.05);
+            }
+        }
+
+        .gacha-sparkles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            color: #feca57;
+            font-size: 20px;
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .gacha-message {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gacha-character {
+            font-size: 80px;
+            margin: 20px 0;
+            animation: characterAppear 0.8s ease-out;
+        }
+
+        @keyframes characterAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotate(-10deg);
+            }
+            50% {
+                transform: scale(1.2) rotate(5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .excitement-text {
+            color: #feca57;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin: 20px 0;
+            animation: excitementPulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes excitementPulse {
+            0% {
+                transform: scale(1);
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            }
+            100% {
+                transform: scale(1.05);
+                text-shadow: 2px 2px 8px rgba(254, 202, 87, 0.5);
+            }
+        }
+
+        .gacha-machine.shaking {
+            animation: machineShake 0.1s linear infinite;
+        }
+
+        @keyframes machineShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        .special-glow {
+            box-shadow: 0 0 20px rgba(254, 202, 87, 0.8), 
+                        0 0 40px rgba(254, 202, 87, 0.6),
+                        0 0 60px rgba(254, 202, 87, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -393,6 +570,31 @@
         </div>
     </div>
 
+    <!-- Gacha Event Overlay -->
+    <div id="gacha-overlay" class="gacha-overlay">
+        <div class="gacha-container">
+            <div class="gacha-title">✨ アゲアゲ ガチャタイム ✨</div>
+            
+            <div class="gacha-machine">
+                <div id="gacha-ball" class="gacha-ball">🎰</div>
+                <div class="gacha-sparkles">
+                    <div class="sparkle" style="top: 10%; left: 20%;">✨</div>
+                    <div class="sparkle" style="top: 20%; right: 15%;">⭐</div>
+                    <div class="sparkle" style="bottom: 20%; left: 15%;">💫</div>
+                    <div class="sparkle" style="bottom: 10%; right: 20%;">✨</div>
+                </div>
+            </div>
+            
+            <div id="gacha-message" class="gacha-message">ガチャガチャ回転中...</div>
+            
+            <div id="gacha-character" class="gacha-character" style="display: none;"></div>
+            
+            <div id="excitement-text" class="excitement-text" style="display: none;">
+                スペシャルメニューが出現！
+            </div>
+        </div>
+    </div>
+
     <script src="menuDatabase.js"></script>
     <script>
 
@@ -404,6 +606,7 @@
         };
 
         let currentSuggestion = null;
+        let gachaEventTriggered = false;
 
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
@@ -431,6 +634,12 @@
             document.querySelector('.optional-btn').addEventListener('click', function() {
                 this.classList.toggle('selected');
                 selections.mood = this.classList.contains('selected') ? this.dataset.mood : null;
+                
+                // アゲアゲボタンが選択された場合、ガチャイベントを発動（初回のみ）
+                if (selections.mood === 'special' && !gachaEventTriggered) {
+                    gachaEventTriggered = true;
+                    triggerGachaEvent();
+                }
             });
 
             // 提案ボタン
@@ -760,6 +969,9 @@
             // 選択状態をリセット
             selections = {budget: null, hunger: null, mood: null};
             
+            // ガチャイベントフラグをリセット
+            gachaEventTriggered = false;
+            
             // ボタンの選択状態をリセット
             document.querySelectorAll('.choice-btn, .optional-btn').forEach(btn => {
                 btn.classList.remove('selected');
@@ -771,6 +983,189 @@
             // 最初の画面を表示
             goBack();
         }
+
+        // 音声ファイルを使用した音響効果
+        function createAudioController() {
+            let drumrollAudio = null;
+            let finishAudio = null;
+            
+            try {
+                drumrollAudio = new Audio('ドラムロール.mp3');
+                finishAudio = new Audio('決定ボタンを押す37 (1).mp3');
+                
+                // 音声の設定
+                drumrollAudio.loop = true;
+                drumrollAudio.volume = 0.7;
+                finishAudio.volume = 0.8;
+                
+                // プリロード
+                drumrollAudio.preload = 'auto';
+                finishAudio.preload = 'auto';
+                
+            } catch (error) {
+                console.log('Audio files not found:', error);
+            }
+            
+            return {
+                start: () => {
+                    if (drumrollAudio) {
+                        drumrollAudio.currentTime = 0;
+                        drumrollAudio.play().catch(e => console.log('Drumroll play failed:', e));
+                    }
+                },
+                stop: () => {
+                    if (drumrollAudio) {
+                        drumrollAudio.pause();
+                        drumrollAudio.currentTime = 0;
+                    }
+                },
+                playFinishSound: () => {
+                    if (finishAudio) {
+                        finishAudio.currentTime = 0;
+                        finishAudio.play().catch(e => console.log('Finish sound play failed:', e));
+                    }
+                }
+            };
+        }
+
+        // ガチャイベント関連の関数
+        function triggerGachaEvent() {
+            const overlay = document.getElementById('gacha-overlay');
+            const ball = document.getElementById('gacha-ball');
+            const machine = document.querySelector('.gacha-machine');
+            const message = document.getElementById('gacha-message');
+            const character = document.getElementById('gacha-character');
+            const excitementText = document.getElementById('excitement-text');
+            
+            // 音声コントローラーを作成
+            const audioController = createAudioController();
+            
+            // オーバーレイを表示
+            overlay.style.display = 'flex';
+            
+            // 初期状態にリセット
+            ball.classList.remove('stopped');
+            machine.classList.remove('shaking', 'special-glow');
+            character.style.display = 'none';
+            excitementText.style.display = 'none';
+            message.textContent = 'ガチャガチャ回転中...';
+            ball.textContent = '🎰';
+            
+            // バイブレーション（対応ブラウザのみ）
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100, 50, 200]);
+            }
+            
+            // ドラムロール開始
+            audioController.start();
+            
+            // マシンにシェイクエフェクトを追加
+            machine.classList.add('shaking');
+            
+            // スピン時間を4秒に変更
+            const spinDuration = 4000; // 4秒
+            
+            // データベースから食堂メニューの絵文字を取得
+            const menuItems = [];
+            // メインメニューから絵文字を取得
+            menuDatabase.main.forEach(item => menuItems.push(item.icon));
+            // サイドメニューから絵文字を取得
+            menuDatabase.side.forEach(item => menuItems.push(item.icon));
+            // ご飯メニューから絵文字を取得
+            menuDatabase.rice.forEach(item => menuItems.push(item.icon));
+            
+            // 重複を除去
+            const foodEmojis = [...new Set(menuItems)];
+            
+            // ランダムに食堂メニューを変更するアニメーション
+            const charChangeInterval = setInterval(() => {
+                ball.textContent = foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
+            }, 120); // 少し速めに切り替え
+            
+            // メッセージを変更するアニメーション
+            const messages = [
+                '今日のスペシャルメニューは？',
+                'ガチャガチャ回転中...',
+                '何が出るかな？',
+                'ワクワクドキドキ！',
+                'もうすぐ決まるよ...',
+                'アゲアゲメニュー登場予感！'
+            ];
+            let messageIndex = 0;
+            const messageInterval = setInterval(() => {
+                message.textContent = messages[messageIndex % messages.length];
+                messageIndex++;
+                
+                // ランダムな短いバイブレーション
+                if (navigator.vibrate && Math.random() < 0.2) {
+                    navigator.vibrate(30);
+                }
+            }, 800);
+            
+            // 4秒後に停止してキャラクター表示
+            setTimeout(() => {
+                clearInterval(charChangeInterval);
+                clearInterval(messageInterval);
+                
+                // ドラムロール停止とフィニッシュ音
+                audioController.stop();
+                audioController.playFinishSound();
+                
+                // シェイクを停止
+                machine.classList.remove('shaking');
+                
+                // ボールを停止状態に
+                ball.classList.add('stopped');
+                
+                // 最終的な食堂メニューを選択（スペシャル系を優先）
+                const specialItems = menuDatabase.main.filter(item => item.name.includes('スペシャル'));
+                const finalEmoji = specialItems.length > 0 && Math.random() < 0.4 
+                    ? specialItems[Math.floor(Math.random() * specialItems.length)].icon
+                    : foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
+                    
+                ball.textContent = finalEmoji;
+                
+                // スペシャルエフェクト
+                machine.classList.add('special-glow');
+                
+                // 成功バイブレーション
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200, 100, 300]);
+                }
+                
+                // メッセージ更新
+                message.textContent = 'アゲアゲ成功！';
+                
+                // 大きなキャラクターを表示
+                setTimeout(() => {
+                    character.textContent = finalEmoji;
+                    character.style.display = 'block';
+                    excitementText.style.display = 'block';
+                }, 500);
+                
+                // 2秒後にオーバーレイを閉じて、メニュー提案を表示
+                setTimeout(() => {
+                    closeGachaEvent();
+                    // ガチャイベント後にメニュー提案を自動実行
+                    if (selections.budget && selections.hunger) {
+                        generateSuggestion();
+                    }
+                }, 2000);
+                
+            }, spinDuration);
+        }
+        
+        function closeGachaEvent() {
+            const overlay = document.getElementById('gacha-overlay');
+            overlay.style.display = 'none';
+        }
+
+        // オーバーレイをクリックしても閉じる
+        document.getElementById('gacha-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeGachaEvent();
+            }
+        });
     </script>
 </body>
 </html>
