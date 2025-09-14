@@ -553,6 +553,9 @@
             <div class="result-header" style="text-align: center; margin-bottom: 30px;">
                 <h3>🎉 決定しました！</h3>
                 <p style="margin-top: 10px; color: #666;">最高のランチタイムをお過ごしください</p>
+                <div style="text-align: center; margin-top: 20px;">
+                    <img src="GSYUASA.png" alt="GSYUASA Logo" style="max-width: 200px; height: auto;">
+                </div>
             </div>
             
             <div class="result-card">
@@ -573,7 +576,7 @@
     <!-- Gacha Event Overlay -->
     <div id="gacha-overlay" class="gacha-overlay">
         <div class="gacha-container">
-            <div class="gacha-title">✨ アゲアゲ ガチャタイム ✨</div>
+            <div class="gacha-title">✨ アゲアゲ<br>&nbsp;&nbsp;&nbsp;ガチャタイム ✨</div>
             
             <div class="gacha-machine">
                 <div id="gacha-ball" class="gacha-ball">🎰</div>
@@ -590,7 +593,7 @@
             <div id="gacha-character" class="gacha-character" style="display: none;"></div>
             
             <div id="excitement-text" class="excitement-text" style="display: none;">
-                スペシャルメニューが出現！
+                スペシャルメニュー<br>出現！！
             </div>
         </div>
     </div>
@@ -1143,14 +1146,14 @@
                     excitementText.style.display = 'block';
                 }, 500);
                 
-                // 2秒後にオーバーレイを閉じて、メニュー提案を表示
+                // 3秒後にオーバーレイを閉じて、メニュー提案を表示
                 setTimeout(() => {
                     closeGachaEvent();
                     // ガチャイベント後にメニュー提案を自動実行
                     if (selections.budget && selections.hunger) {
                         generateSuggestion();
                     }
-                }, 2000);
+                }, 3000);
                 
             }, spinDuration);
         }
